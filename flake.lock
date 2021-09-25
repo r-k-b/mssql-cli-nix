@@ -39,11 +39,11 @@
     "source": {
       "flake": false,
       "locked": {
-        "lastModified": 1631904991,
+        "lastModified": 1631904992,
         "narHash": "sha256-88+u4LT+lmSKwlDuNaWzrC5XSEzajr+RoXdhpHxdf/c=",
         "owner": "dbcli",
         "repo": "mssql-cli",
-        "rev": "6509aa2fc226dde8ce6bab7af9cbb5f03717b936",
+        "rev": "30aae92a0abca61a69b4c5f214db7678126dd2d4",
         "type": "github"
       },
       "original": {
