@@ -11,6 +11,10 @@ $ nix run github:r-k-b/mssql-cli-nix#cli
 # debugging the build
 
 ```shell
+$ git clone git@github.com:r-k-b/mssql-cli-nix.git
+
+$ cd mssql-cli-nix
+
 $ nix develop
 
 $ rm -rf outputs source
