@@ -23,7 +23,9 @@
         };
       in {
         defaultPackage = mssql-cli;
-        devShell = import ./shell.nix { inherit mssql-cli pkgs; };
+        #devShell = import ./shell.nix { inherit mssql-cli pkgs; };
         #packages = { inherit mssql-cli; };
       });
+
+  nixConfig.bash-prompt = "[mssqlcli]$ ";
 }

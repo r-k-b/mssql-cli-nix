@@ -37,46 +37,7 @@ let
       sha256 = "sha256:10r6xb1n0aqx5fr78bcj0h88x2g9w0haa77anbdmgiiqk8yqlnv9";
     };
   };
-
-  skipToolDownloads = pkgs.writeText "skipToolDownloads.patch" ''
-    Index: mssqlcli/mssqltoolsservice/externals.py
-    IDEA additional info:
-    Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-    <+>UTF-8
-    ===================================================================
-    diff --git a/mssqlcli/mssqltoolsservice/externals.py b/mssqlcli/mssqltoolsservice/externals.py
-    --- a/mssqlcli/mssqltoolsservice/externals.py	(revision 6509aa2fc226dde8ce6bab7af9cbb5f03717b936)
-    +++ b/mssqlcli/mssqltoolsservice/externals.py	(date 1632528436596)
-    @@ -1,6 +1,7 @@
-     from __future__ import print_function
-
-     import os
-    +import errno
-     import sys
-     import tarfile
-     import zipfile
-    @@ -33,15 +34,8 @@
-             Download each for the plaform specific sqltoolsservice packages
-         """
-         for packageFilePath in SUPPORTED_PLATFORMS.values():
-    -        if not os.path.exists(os.path.dirname(packageFilePath)):
-    -            os.makedirs(os.path.dirname(packageFilePath))
-    -
-    -        packageFileName = os.path.basename(packageFilePath)
-    -        githubUrl = 'https://github.com/microsoft/sqltoolsservice/releases/download/{}/{}'.format(SQLTOOLSSERVICE_RELEASE, packageFileName)
-    -        print('Downloading {}'.format(githubUrl))
-    -        r = requests.get(githubUrl)
-    -        with open(packageFilePath, 'wb') as f:
-    -            f.write(r.content)
-    +        if not os.path.exists(packageFilePath):
-    +            raise FileNotFoundError(errno.ENOENT, 'You need to supply these files', packageFilePath)
-
-     def copy_sqltoolsservice(platform):
-         """
-  '';
-
-  #pythonPackages.buildPythonApplication {
-in stdenv.mkDerivation {
+in pythonPackages.buildPythonApplication {
   inherit pname version;
 
   src = source;
@@ -86,7 +47,7 @@ in stdenv.mkDerivation {
   #};
 
   # Compile-time dependencies
-  nativeBuildInputs = (with pkgs; [ git ]) ++ (with pythonPackages; [
+  nativeBuildInputs = (with pkgs; [ git less ]) ++ (with pythonPackages; [
     applicationinsights
     azure-core
     #bumpversion # do we need to package this ourselves? how?
@@ -121,9 +82,7 @@ in stdenv.mkDerivation {
 
   #checkInputs = [ pythonPackages.nose ];
 
-  patchPhase = ''
-    git apply ${skipToolDownloads}
-  '';
+  patches = [ ./0001-skipToolDownloads.patch ];
 
   configurePhase = ''
     # "add" the sqltoolsservice files
@@ -137,17 +96,14 @@ in stdenv.mkDerivation {
     ln -s ${sqlTools.win32.archive} sqltoolsservice/${sqlTools.win32.folder}/${sqlTools.win32.name}
   '';
 
+  doCheck = false;
+
   buildPhase = ''
     python dev_setup.py
     python build.py build
 
     # run tests? (how to start an instance of Sql Server?)
     # https://github.com/dbcli/mssql-cli/blob/0c3bceeebf4780e4ec6d75d926cb25b602570744/doc/development_guide.md#Run_Unit_Tests_Integration_Tests
-  '';
-
-  installPhase = ''
-    mkdir -p $out
-    cp -r dist $out # this is only a .whl file?
   '';
 
   preCheck = ''

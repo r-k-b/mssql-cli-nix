@@ -1,0 +1,34 @@
+Index: mssqlcli/mssqltoolsservice/externals.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mssqlcli/mssqltoolsservice/externals.py b/mssqlcli/mssqltoolsservice/externals.py
+--- a/mssqlcli/mssqltoolsservice/externals.py	(revision 6509aa2fc226dde8ce6bab7af9cbb5f03717b936)
++++ b/mssqlcli/mssqltoolsservice/externals.py	(date 1632528436596)
+@@ -1,6 +1,7 @@
+ from __future__ import print_function
+
+ import os
++import errno
+ import sys
+ import tarfile
+ import zipfile
+@@ -33,15 +34,8 @@
+         Download each for the plaform specific sqltoolsservice packages
+     """
+     for packageFilePath in SUPPORTED_PLATFORMS.values():
+-        if not os.path.exists(os.path.dirname(packageFilePath)):
+-            os.makedirs(os.path.dirname(packageFilePath))
+-
+-        packageFileName = os.path.basename(packageFilePath)
+-        githubUrl = 'https://github.com/microsoft/sqltoolsservice/releases/download/{}/{}'.format(SQLTOOLSSERVICE_RELEASE, packageFileName)
+-        print('Downloading {}'.format(githubUrl))
+-        r = requests.get(githubUrl)
+-        with open(packageFilePath, 'wb') as f:
+-            f.write(r.content)
++        if not os.path.exists(packageFilePath):
++            raise FileNotFoundError(errno.ENOENT, 'You need to supply these files', packageFilePath)
+
+ def copy_sqltoolsservice(platform):
+     """
