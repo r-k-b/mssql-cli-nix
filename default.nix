@@ -53,8 +53,8 @@ in pythonPackages.buildPythonApplication {
     azure-core
     azure-nspkg
     azure-storage
-    #bump2version
-    #bumpversion # do we need to package this ourselves? how?
+    bump2version
+    bumpversion
     cli-helpers
     click
     configobj

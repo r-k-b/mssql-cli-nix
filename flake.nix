@@ -34,6 +34,9 @@
                   --replace "'locale'" "'${pkgs.locale}/bin/locale'"
               '';
             });
+
+            bump2version = pythonPackages.callPackage ./bump2version.nix { };
+            bumpversion = pythonPackages.callPackage ./bumpversion.nix { };
           };
         }).pkgs;
 
