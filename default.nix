@@ -96,9 +96,12 @@ in pythonPackages.buildPythonApplication {
     ln -s ${sqlTools.win32.archive} sqltoolsservice/${sqlTools.win32.folder}/${sqlTools.win32.name}
   '';
 
-  doCheck = false;
+  doCheck = true;
 
   buildPhase = ''
+    export HOME=$TMPDIR/homeless-shelter
+    mkdir -p $HOME
+    patchShebangs ./mssql-cli
     python dev_setup.py
     python build.py build
 
@@ -116,8 +119,11 @@ in pythonPackages.buildPythonApplication {
     export HOME=$TMPDIR
   '';
 
-  postInstall = ''
-    #rm -r $out/${pythonPackages.python.sitePackages}/PyGitUp/tests
+  postInstall = "\n";
+
+  doInstallCheck = true;
+  installCheckPhase = ''
+    $out/bin/mssql-cli --help > /dev/null
   '';
 
   meta = with lib; {
