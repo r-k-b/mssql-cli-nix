@@ -41,11 +41,7 @@
           inherit lib pkgs pythonPackages source stdenv;
           tree = pkgs.tree;
         };
-      in {
-        defaultPackage = mssql-cli;
-        #devShell = import ./shell.nix { inherit mssql-cli pkgs; };
-        #packages = { inherit mssql-cli; };
-      });
+      in { defaultPackage = mssql-cli; });
 
   nixConfig.bash-prompt = "[mssqlcli]$ ";
 }
