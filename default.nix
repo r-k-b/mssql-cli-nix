@@ -49,7 +49,11 @@ in pythonPackages.buildPythonApplication {
   # Compile-time dependencies
   nativeBuildInputs = (with pkgs; [ git less ]) ++ (with pythonPackages; [
     applicationinsights
+    azure-common
     azure-core
+    azure-nspkg
+    azure-storage
+    #bump2version
     #bumpversion # do we need to package this ourselves? how?
     cli-helpers
     click
@@ -69,6 +73,9 @@ in pythonPackages.buildPythonApplication {
     pytest
     pytest
     pytest
+    pytest-cov
+    pytest-timeout
+    python-dateutil
     requests
     setuptools
     sqlparse
