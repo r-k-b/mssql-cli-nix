@@ -102,6 +102,12 @@ in pythonPackages.buildPythonApplication {
     python dev_setup.py
     python build.py build
 
+    # delete the redundant "dev" wheel (it's identical to the 1.1.0 wheel)
+    rm dist/mssql_cli-dev*
+
+    # try to avoid `ERROR: mssql_cli-dev-latest-py2.py3-none-manylinux1_x86_64.whl is not a supported wheel on this platform.`
+    ${pkgs.util-linux}/bin/rename 'manylinux1_x86_64' 'any' dist/*.whl
+
     # run tests? (how to start an instance of Sql Server?)
     # https://github.com/dbcli/mssql-cli/blob/0c3bceeebf4780e4ec6d75d926cb25b602570744/doc/development_guide.md#Run_Unit_Tests_Integration_Tests
   '';
