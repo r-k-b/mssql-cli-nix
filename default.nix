@@ -6,9 +6,10 @@ let
   sqltoolsservice-release = "v3.0.0-release.72";
 
   archiveFrom = { folder, file, sha256 }: {
-    archive = builtins.fetchurl {
+    archive = pkgs.fetchzip {
       url = "https://github.com/microsoft/sqltoolsservice/releases/download/"
         + "${sqltoolsservice-release}/${file}";
+      stripRoot = false;
       inherit sha256;
     };
     name = file;
@@ -19,22 +20,7 @@ let
     manylinux = archiveFrom {
       folder = "manylinux1";
       file = "Microsoft.SqlTools.ServiceLayer-rhel-x64-netcoreapp3.1.tar.gz";
-      sha256 = "sha256:1ph63sjv7h3h94dc7by4v9hshag8s30fyibz92pq8f93zq1ys8kb";
-    };
-    macosx = archiveFrom {
-      folder = "macosx_10_11_intel";
-      file = "Microsoft.SqlTools.ServiceLayer-osx-x64-netcoreapp3.1.tar.gz";
-      sha256 = "sha256:170fq2ypbpmwb2h9bd6l4ic250qdcpf368zvjf2962czbxqb2hwa";
-    };
-    win64 = archiveFrom {
-      folder = "win_amd64";
-      file = "Microsoft.SqlTools.ServiceLayer-win-x64-netcoreapp3.1.zip";
-      sha256 = "sha256:0xjkd491pdln75la5bclga5waiqjiaiy4pnmr52jjfvwrh1jznhy";
-    };
-    win32 = archiveFrom {
-      folder = "win32";
-      file = "Microsoft.SqlTools.ServiceLayer-win-x86-netcoreapp3.1.zip";
-      sha256 = "sha256:10r6xb1n0aqx5fr78bcj0h88x2g9w0haa77anbdmgiiqk8yqlnv9";
+      sha256 = "sha256-I87uOspXWIyy14mKKx6TCID4UHi3EYON1RyD0s8N04s=";
     };
   };
 in pythonPackages.buildPythonApplication {
@@ -89,18 +75,11 @@ in pythonPackages.buildPythonApplication {
 
   #checkInputs = [ pythonPackages.nose ];
 
-  patches = [ ./0001-skipToolDownloads.patch ];
+  patches = [ ./0001-skipToolDownloads.patch ./0002-skipToolCopies.patch ];
 
   configurePhase = ''
-    # "add" the sqltoolsservice files
-    mkdir -p sqltoolsservice/${sqlTools.manylinux.folder}
-    ln -s ${sqlTools.manylinux.archive} sqltoolsservice/${sqlTools.manylinux.folder}/${sqlTools.manylinux.name}
-    mkdir -p sqltoolsservice/${sqlTools.macosx.folder}
-    ln -s ${sqlTools.macosx.archive} sqltoolsservice/${sqlTools.macosx.folder}/${sqlTools.macosx.name}
-    mkdir -p sqltoolsservice/${sqlTools.win64.folder}
-    ln -s ${sqlTools.win64.archive} sqltoolsservice/${sqlTools.win64.folder}/${sqlTools.win64.name}
-    mkdir -p sqltoolsservice/${sqlTools.win32.folder}
-    ln -s ${sqlTools.win32.archive} sqltoolsservice/${sqlTools.win32.folder}/${sqlTools.win32.name}
+    # make the sqltoolsservice files available in a known location
+    ln -s ${sqlTools.manylinux.archive} ./bin
   '';
 
   doCheck = true;
@@ -128,7 +107,8 @@ in pythonPackages.buildPythonApplication {
 
   postInstall = ''
     for p in $out/bin/*; do
-      wrapProgram $p --prefix PYTHONPATH : "$PYTHONPATH"
+      wrapProgram $p --prefix PYTHONPATH : "$PYTHONPATH" \
+        --set MSSQLTOOLSSERVICE_PATH ${sqlTools.manylinux.archive}
     done
   '';
 

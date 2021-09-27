@@ -1,0 +1,35 @@
+Index: utility.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utility.py b/utility.py
+--- a/utility.py	(revision 30aae92a0abca61a69b4c5f214db7678126dd2d4)
++++ b/utility.py	(date 1632742340014)
+@@ -92,7 +92,7 @@
+
+     current_platform = get_current_platform()
+     if current_platform:
+-        mssqltoolsservice.copy_sqltoolsservice(current_platform)
++        print("Expecting the sqltoolsservice files to already be in the bin folder.")
+     else:
+         print("This platform: {} does not support mssqltoolsservice.".format(platform.system()))
+
+Index: build.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.py b/build.py
+--- a/build.py	(revision 30aae92a0abca61a69b4c5f214db7678126dd2d4)
++++ b/build.py	(date 1632745000144)
+@@ -28,8 +28,7 @@
+         given platform.
+         :param platform: string
+     """
+-    mssqltoolsservice.clean_up_sqltoolsservice()
+-    mssqltoolsservice.copy_sqltoolsservice(plat)
++    print('clean_and_copy_sqltoolsservice is being handled by Nix.')
+
+
+ def code_analysis():

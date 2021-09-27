@@ -28,7 +28,7 @@ diff --git a/mssqlcli/mssqltoolsservice/externals.py b/mssqlcli/mssqltoolsservic
 -        with open(packageFilePath, 'wb') as f:
 -            f.write(r.content)
 +        if not os.path.exists(packageFilePath):
-+            raise FileNotFoundError(errno.ENOENT, 'You need to supply these files', packageFilePath)
++            print('Note: download skipped and archive not present: {}'.format(packageFilePath))
 
  def copy_sqltoolsservice(platform):
      """
