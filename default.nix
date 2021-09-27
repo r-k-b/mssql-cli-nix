@@ -126,7 +126,11 @@ in pythonPackages.buildPythonApplication {
     export HOME=$TMPDIR
   '';
 
-  postInstall = "\n";
+  postInstall = ''
+    for p in $out/bin/*; do
+      wrapProgram $p --prefix PYTHONPATH : "$PYTHONPATH"
+    done
+  '';
 
   doInstallCheck = true;
   installCheckPhase = ''
